@@ -1,0 +1,152 @@
+/* Base Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 80%;
+    margin: auto;
+    overflow: hidden;
+}
+
+/* Header Styles */
+header {
+    background: #50b3a2;
+    color: #ffffff;
+    padding-top: 30px;
+    min-height: 70px;
+    border-bottom: #e8491d 3px solid;
+}
+
+header h1 {
+    text-align: center;
+    margin: 0;
+    font-size: 36px;
+}
+
+/* Form Styles */
+form {
+    background: #ffffff;
+    padding: 20px;
+    margin-top: 20px;
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="date"],
+input[type="time"],
+textarea {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+input[type="submit"],
+button {
+    background-color: #50b3a2;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+input[type="submit"]:hover,
+button:hover {
+    background-color: #3d8b7a;
+}
+
+/* Table Styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table, th, td {
+    border: 1px solid #dddddd;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+}
+
+th {
+    background-color: #50b3a2;
+    color: white;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* Admin Dashboard Styles */
+h1, h2 {
+    text-align: center;
+}
+
+a {
+    display: block;
+    margin: 10px;
+    text-decoration: none;
+    color: blue;
+}
+
+a:hover {
+    color: #e8491d;
+}
+
+/* Countdown Timer Styles */
+.countdown-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    text-align: center;
+}
+
+.countdown-item {
+    background-color: #f8f9fa; /* Light background for better contrast within the card */
+    padding: 15px 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.countdown-item span {
+    display: block;
+    font-size: 2em;
+    color: #50b3a2;
+    font-weight: bold;
+}
+
+.countdown-label {
+    font-size: 0.9em;
+    color: #555555;
+    margin-top: 5px;
+}
+
+/* Responsive Countdown */
+@media (max-width: 768px) {
+    .countdown-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .countdown-item {
+        width: 100%;
+    }
+}

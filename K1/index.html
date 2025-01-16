@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meeting Scheduler</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.11.0/main.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style1.css">
+
+</head>
+<body>
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center my-3">
+            <img src="logo.png" alt="Company Logo" style="height: 150px;">
+            <div>
+                <h1>Meeting Room Reservation</h1>
+                
+            </div>
+        </div>
+        <!-- Back Button -->
+        <div class="mb-4">
+            <a href="../index.html" class="btn btn-secondary">Back to Home</a>
+        </div>
+        <h1>Location 1 Meeting Room Reservation</h1>
+        <form id="meetingForm" action="submit.php" method="POST">
+            <div class="form-group">
+                <label for="date">Select Date:</label>
+                <div class="month">
+                    <ul>
+                        <li class="prev" id="prevMonth">&#10094;</li>
+                        <li class="next" id="nextMonth">&#10095;</li>
+                        <li id="monthYear">August<br><span style="font-size:18px">2021</span></li>
+                    </ul>
+                </div>
+                <ul class="weekdays">
+                    <li>Mo</li>
+                    <li>Tu</li>
+                    <li>We</li>
+                    <li>Th</li>
+                    <li>Fr</li>
+                    <li>Sa</li>
+                    <li>Su</li>
+                </ul>
+                <ul class="days" id="days">
+                    <!-- Days will be populated by JavaScript -->
+                </ul>
+                <input type="hidden" id="datePicker" name="date" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="timeSlot">Select Time Slots:</label>
+                <div id="timeSlots" class="d-flex flex-wrap justify-content-center">
+                    <!-- Time slots will be populated by JavaScript -->
+                </div>
+                <input type="hidden" name="timeSlots" required>
+            </div>
+
+            <div class="form-group">
+                <label for="firstName">First Name:</label>
+                <input type="text" id="firstName" name="firstName" required>
+            </div>
+
+            <div class="form-group">
+                <label for="surname">Surname:</label>
+                <input type="text" id="surname" name="surname" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="purpose">Purpose:</label>
+                <textarea id="purpose" name="purpose" required></textarea>
+            </div>
+
+            <button type="submit">Schedule Meeting</button>
+        </form>
+    </div>
+    
+    <!-- Meeting Details Modal -->
+    <div class="modal fade" id="meetingDetailsModal" tabindex="-1" aria-labelledby="meetingDetailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="meetingDetailsModalLabel">Meeting Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Name:</strong> <span id="modalName"></span></p>
+                    <p><strong>Email:</strong> <span id="modalEmail"></span></p>
+                    <p><strong>Purpose:</strong> <span id="modalPurpose"></span></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.11.0/main.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" integrity="sha512-fD9DI5bZwQxOi7MhYWnnNPlvXdp/2Pj3XSTRrFs5FQa4mizyGLnJcN6tuvUS6LbmgN1ut+XGSABKvjN0H6Aoow==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+    <script>
+
+$(document).ready(function(){
+    const datePicker = $('#datePicker');
+    const daysContainer = $('#days');
+    const monthYear = $('#monthYear');
+    const prevMonth = $('#prevMonth');
+    const nextMonth = $('#nextMonth');
+    const timeSlotsContainer = $('#timeSlots');
+
+    let currentDate = new Date();
+
+    function renderCalendar(date) {
+        const year = date.getFullYear();
+        const month = date.getMonth();
+        const firstDay = new Date(year, month, 1).getDay();
+        const lastDate = new Date(year, month + 1, 0).getDate();
+
+        monthYear.html(`${date.toLocaleString('default', { month: 'long' })}<br><span style="font-size:18px">${year}</span>`);
+
+        daysContainer.empty();
+
+        for (let i = 1; i < firstDay; i++) {
+            daysContainer.append('<li></li>');
+        }
+
+        for (let day = 1; day <= lastDate; day++) {
+            const dayDate = new Date(year, month, day);
+            const dayElement = $(`<li>${day}</li>`);
+
+            if (dayDate < new Date().setHours(0, 0, 0, 0)) {
+                dayElement.addClass('past');
+            } else if (dayDate.getDay() === 0 || dayDate.getDay() === 6) {
+                dayElement.addClass('weekend');
+            } else {
+                dayElement.on('click', function() {
+                    daysContainer.find('li span.active').removeClass('active');
+                    $(this).html(`<span class="active">${day}</span>`);
+                    datePicker.val(`${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`);
+                    updateTimeSlots(new Date(year, month, day));
+                });
+            }
+
+            daysContainer.append(dayElement);
+        }
+    }
+
+    prevMonth.on('click', function() {
+        currentDate.setMonth(currentDate.getMonth() - 1);
+        renderCalendar(currentDate);
+    });
+
+    nextMonth.on('click', function() {
+        currentDate.setMonth(currentDate.getMonth() + 1);
+        renderCalendar(currentDate);
+    });
+
+    function updateTimeSlots(date) {
+        timeSlotsContainer.empty(); // Clear existing options
+
+        // Generate time slots from 9 AM to 5 PM
+        const startHour = 8;
+        const endHour = 17;
+
+        // Replace ISO string with local date formatting to prevent timezone issues
+        const selectedDate = `${date.getFullYear()}-${(date.getMonth()+1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+
+        $.post('get_booked_slots.php', { date: selectedDate }, function(data) {
+            let bookedSlots = [];
+            if (Array.isArray(data)) {
+                bookedSlots = data.map(slot => slot.trim());
+            } else {
+                console.error('Invalid data format received:', data);
+            }
+            console.log('Booked Slots:', bookedSlots); // Debugging line
+
+            for (let hour = startHour; hour < endHour; hour++) {
+                const startTime = `${hour.toString().padStart(2, '0')}:00`;
+                const endTime = `${(hour + 1).toString().padStart(2, '0')}:00`;
+                // Add seconds to match database format
+                const timeSlotValue = `${startTime}:00 - ${endTime}:00`.trim();
+                const displayTimeSlot = `${startTime} - ${endTime}`; // Display without seconds
+                const timeSlot = $(`<div class="time-slot-card" data-value="${timeSlotValue}">${displayTimeSlot}</div>`);
+
+                console.log('Checking Time Slot:', timeSlotValue); // Debugging line
+
+                if (bookedSlots.includes(timeSlotValue)) {
+                    timeSlot.addClass('booked').on('click', function() {
+                        // Fetch and display meeting details
+                        const selectedDate = $('#datePicker').val();
+                        const slot = $(this).data('value');
+                        $.post('get_meeting_details.php', { date: selectedDate, timeSlot: slot }, function(data) {
+                            if (data.success) {
+                                $('#modalName').text(data.name);
+                                $('#modalEmail').text(data.email);
+                                $('#modalPurpose').text(data.purpose);
+                                var meetingDetailsModal = new bootstrap.Modal(document.getElementById('meetingDetailsModal'));
+                                meetingDetailsModal.show();
+                            } else {
+                                alert('Failed to retrieve meeting details.');
+                            }
+                        }, 'json').fail(function() {
+                            alert('Error fetching meeting details.');
+                        });
+                    });
+                } else {
+                    const now = new Date();
+                    const slotDateTime = new Date(`${selectedDate}T${startTime}`);
+                    if (slotDateTime < now) {
+                        timeSlot.addClass('past');
+                    } else {
+                        timeSlot.addClass('available').on('click', function() {
+                            const selectedSlot = $(this);
+                            const slotValue = selectedSlot.data('value');
+                            const dateValue = $('#datePicker').val();
+
+                            $.post('check_slot_availability.php', { date: dateValue, timeSlot: slotValue }, function(response) {
+                                if (response.available) {
+                                    selectedSlot.toggleClass('selected');
+                                    updateSelectedTimeSlots();
+                                } else {
+                                    selectedSlot.addClass('booked').removeClass('selected').off('click');
+                                    alert('This time slot has just been booked by someone else.');
+                                }
+                            }, 'json').fail(function() {
+                                alert('Error checking slot availability.');
+                            });
+                        });
+                    }
+                }
+
+                timeSlotsContainer.append(timeSlot);
+            }
+        }, 'json').fail(function() {
+            console.error('Failed to fetch booked slots.');
+            alert('Error fetching booked slots. Please try again later.');
+        });
+    }
+
+    function updateSelectedTimeSlots() {
+        const selectedSlots = [];
+        $('.time-slot-card.selected').each(function() {
+            selectedSlots.push($(this).data('value'));
+        });
+        $('input[name="timeSlots"]').val(selectedSlots.join(','));
+    }
+    renderCalendar(currentDate);
+});
+
+    </script>
+</body>
+</html>
