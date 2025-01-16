@@ -41,6 +41,11 @@ To run this project, you need:
 3. Choose the date and time slots for your meeting.
 4. Enter your details and the purpose of the meeting.
 5. Submit the form to book the meeting room.
+6. Login details for admin dashboard.
+ -  Username : admin
+ - Password : password 
+
+Password can be change in admin dashbooard.
 
 ## Technologies Used
 - **PHP** for server-side logic
